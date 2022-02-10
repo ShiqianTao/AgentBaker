@@ -6,7 +6,7 @@
         Produces a release notes file for a Windows VHD
 #>
 
-$ErrorActionPreference = "Continue" # $ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Stop" # $ErrorActionPreference = "Continue" #
 
 $releaseNotesFilePath = "c:\release-notes.txt"
 
