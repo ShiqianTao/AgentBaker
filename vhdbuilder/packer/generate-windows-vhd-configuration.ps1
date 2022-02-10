@@ -2,6 +2,9 @@
 # This script is used to generate shared configuration for configure-windows-vhd.ps1 and windows-vhd-content-test.ps1.
 # MUST NOT add any shared functions in this script.
 $windowsConfig = @'
+
+Set-PSDebug -Trace 1
+
 $global:containerRuntime = $env:ContainerRuntime
 $validContainerRuntimes = @("containerd", "docker")
 if (-not ($validContainerRuntimes -contains $containerRuntime)) {

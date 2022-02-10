@@ -1,5 +1,8 @@
 # Stop and remove Azure Agents to enable use in Azure Stack
 # If deploying an Azure VM the agents will be re-added to the VMs at deployment time
+
+Set-PSDebug -Trace 1
+
 Stop-Service WindowsAzureGuestAgent
 Stop-Service WindowsAzureNetAgentSvc
 Stop-Service RdAgent
