@@ -27,12 +27,12 @@ if (-not ($validSKU -contains $windowsSKU)) {
 # SSUs improve the reliability of the update process to mitigate potential issues while installing the LCU.
 switch -Regex ($windowsSKU) {
     "2019*" {
-        $global:patchUrls = @("")
-        $global:patchIDs = @("")
+        $global:patchUrls = @()
+        $global:patchIDs = @()
     }
     "2022*" {
-        $global:patchUrls = @("")
-        $global:patchIDs = @("")
+        $global:patchUrls = @()
+        $global:patchIDs = @()
     }
 }
 
