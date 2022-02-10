@@ -146,7 +146,8 @@ switch -Regex ($windowsSKU) {
         "https://acs-mirror.azureedge.net/calico-node/v3.21.4/binaries/calico-windows-v3.21.4.zip"
     )}
     "2022*" { $akseCacheCalico = @(
-        "https://acs-mirror.azureedge.net/calico-node/v3.20.0/binaries/calico-windows-v3.20.0.zip"
+        "https://acs-mirror.azureedge.net/calico-node/v3.20.0/binaries/calico-windows-v3.20.0.zip",
+        "https://acs-mirror.azureedge.net/calico-node/v3.21.4/binaries/calico-windows-v3.21.4.zip"
     )}
 }
 
@@ -214,12 +215,22 @@ switch -Regex ($windowsSKU) {
         "https://acs-mirror.azureedge.net/kubernetes/v1.20.7-hotfix.20211115/windowszip/v1.20.7-hotfix.20211115-1int.zip",
         "https://acs-mirror.azureedge.net/kubernetes/v1.20.9-hotfix.20211115/windowszip/v1.20.9-hotfix.20211115-1int.zip",
         "https://acs-mirror.azureedge.net/kubernetes/v1.20.13/windowszip/v1.20.13-1int.zip",
+        "https://acs-mirror.azureedge.net/kubernetes/v1.20.13-hotfix.20220127/windowszip/v1.20.13-hotfix.20220127-1int.zip",
+        "https://acs-mirror.azureedge.net/kubernetes/v1.20.15-hotfix.20220201/windowszip/v1.20.15-hotfix.20220201-1int.zip",
         "https://acs-mirror.azureedge.net/kubernetes/v1.21.1-hotfix.20211115/windowszip/v1.21.1-hotfix.20211115-1int.zip",
         "https://acs-mirror.azureedge.net/kubernetes/v1.21.2-hotfix.20211115/windowszip/v1.21.2-hotfix.20211115-1int.zip",
+        "https://acs-mirror.azureedge.net/kubernetes/v1.21.2-hotfix.20220130/windowszip/v1.21.2-hotfix.20220130-1int.zip",
         "https://acs-mirror.azureedge.net/kubernetes/v1.21.7/windowszip/v1.21.7-1int.zip",
+        "https://acs-mirror.azureedge.net/kubernetes/v1.21.7-hotfix.20220130/windowszip/v1.21.7-hotfix.20220130-1int.zip",
+        "https://acs-mirror.azureedge.net/kubernetes/v1.21.9-hotfix.20220130/windowszip/v1.21.9-hotfix.20220130-1int.zip",
         "https://acs-mirror.azureedge.net/kubernetes/v1.22.1-hotfix.20211115/windowszip/v1.22.1-hotfix.20211115-1int.zip",
         "https://acs-mirror.azureedge.net/kubernetes/v1.22.2-hotfix.20211115/windowszip/v1.22.2-hotfix.20211115-1int.zip",
+        "https://acs-mirror.azureedge.net/kubernetes/v1.22.2-hotfix.20220128/windowszip/v1.22.2-hotfix.20220128-1int.zip",
         "https://acs-mirror.azureedge.net/kubernetes/v1.22.4/windowszip/v1.22.4-1int.zip",
+        "https://acs-mirror.azureedge.net/kubernetes/v1.22.4-hotfix.20220130/windowszip/v1.22.4-hotfix.20220130-1int.zip",
+        "https://acs-mirror.azureedge.net/kubernetes/v1.22.4-hotfix.20220201/windowszip/v1.22.4-hotfix.20220201-1int.zip",
+        "https://acs-mirror.azureedge.net/kubernetes/v1.22.6-hotfix.20220130/windowszip/v1.22.6-hotfix.20220130-1int.zip",
+        "https://acs-mirror.azureedge.net/kubernetes/v1.23.3/windowszip/v1.23.3-1int.zip",
         "https://acs-mirror.azureedge.net/kubernetes/v1.23.3-hotfix.20220130/windowszip/v1.23.3-hotfix.20220130-1int.zip"
     )}
 }

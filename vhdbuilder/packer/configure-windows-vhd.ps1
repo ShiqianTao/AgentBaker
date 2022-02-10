@@ -28,7 +28,8 @@ function DownloadFileWithRetry {
     )
     curl.exe -f --retry $retryCount --retry-delay $retryDelay -L $URL -o $Dest
     if ($LASTEXITCODE) {
-        throw "Curl exited with '$LASTEXITCODE' while attemping to download '$URL'"
+        # throw "Curl exited with '$LASTEXITCODE' while attemping to download '$URL'"
+        Write-Log "Curl exited with '$LASTEXITCODE' while attemping to download '$URL'"
     }
 }
 
