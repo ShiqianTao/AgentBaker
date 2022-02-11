@@ -199,7 +199,7 @@ var AvailableWindowsPIRDistros []Distro = []Distro{
 // SIG const
 const (
 	AKSWindowsGalleryName      string = "AKSWindows"
-	AKSWindowsResourceGroup    string = "akswinvhdbuilderrg" // AKSWindowsResourceGroup    string = "AKS-Windows"
+	AKSWindowsResourceGroup    string = "AKS-Windows" // AKSWindowsResourceGroup    string = "akswinvhdbuilderrg"
 	AKSUbuntuGalleryName       string = "AKSUbuntu"
 	AKSUbuntuResourceGroup     string = "AKS-Ubuntu"
 	AKSCBLMarinerGalleryName   string = "AKSCBLMariner"
@@ -209,7 +209,7 @@ const (
 const (
 	LinuxSIGImageVersion       string = "2022.02.07"
 	Windows2019SIGImageVersion string = "17763.2366.220117" // WindowsSIGImageVersion string = "17763.2366.220117"
-	Windows2022SIGImageVersion string = "20348.473.22012801"
+	Windows2022SIGImageVersion string = "20348.473.220210"
 	// will not do weekly vhd release as amd64 when ARM64 Compute/AKS is still under development
 	Arm64LinuxSIGImageVersion string = "2022.02.05"
 )
