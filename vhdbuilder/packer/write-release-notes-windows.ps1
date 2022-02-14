@@ -8,7 +8,7 @@
 
 Set-PSDebug -Trace 1
 
-$ErrorActionPreference = "Stop" # $ErrorActionPreference = "Continue" #
+$ErrorActionPreference = "Continue" # $ErrorActionPreference = "Stop"
 
 $releaseNotesFilePath = "c:\release-notes.txt"
 
