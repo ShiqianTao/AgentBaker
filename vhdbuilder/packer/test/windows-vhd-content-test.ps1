@@ -136,6 +136,8 @@ function Test-ImagesPulled {
         Write-Error "unsupported container runtime $containerRuntime"
     }
 
+    Write-Output "imagesToPull: $imagesToPull"
+    Write-Output "pulledImages: $pulledImages"
     Write-Output "Container runtime: $containerRuntime"
     if(Compare-Object $imagesToPull $pulledImages) {
         Write-Error "images to pull do not equal images cached $imagesToPull != $pulledImages"
