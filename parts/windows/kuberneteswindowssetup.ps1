@@ -224,6 +224,133 @@ try
     . c:\AzureData\windows\kubeletfunc.ps1
     . c:\AzureData\windows\kubernetesfunc.ps1
 
+    function Select-Windows-Version2 {
+        param (
+            [Parameter()]
+            [string]
+            $buildNumber
+        )
+        switch ($buildNumber) {
+            "17763" { return "1809-" }
+            "18362" { return "1903-" }
+            "18363" { return "1909-" }
+            "19041" { return "2004-" }
+            "20348" { return "ltsc2022-" }
+            Default { return "-" }
+        }
+    }
+
+    function Install-Containerd {
+        Param(
+            [Parameter(Mandatory = $true)][string]
+            $ContainerdUrl,
+            [Parameter(Mandatory = $true)][string]
+            $CNIBinDir,
+            [Parameter(Mandatory = $true)][string]
+            $CNIConfDir,
+            [Parameter(Mandatory = $true)][string]
+            $KubeDir
+        )
+        $svc = Get-Service -Name containerd -ErrorAction SilentlyContinue
+        if ($null -ne $svc) {
+            Write-Log "Stoping containerd service"
+            $svc | Stop-Service
+        }
+        # TODO: check if containerd is already installed and is the same version before this.
+
+        # Extract the package
+        if ($ContainerdUrl.endswith(".zip")) {
+            $zipfile = [Io.path]::Combine($ENV:TEMP, "containerd.zip")
+            DownloadFileOverHttp -Url $ContainerdUrl -DestinationPath $zipfile
+            Expand-Archive -path $zipfile -DestinationPath $global:ContainerdInstallLocation -Force
+            Remove-Item -Path $zipfile -Force
+        }
+        elseif ($ContainerdUrl.endswith(".tar.gz")) {
+            # upstream containerd package is a tar
+            $tarfile = [Io.path]::Combine($ENV:TEMP, "containerd.tar.gz")
+            DownloadFileOverHttp -Url $ContainerdUrl -DestinationPath $tarfile
+            Create-Directory -FullPath $global:ContainerdInstallLocation -DirectoryUsage "storing containerd"
+            tar -xzf $tarfile -C $global:ContainerdInstallLocation
+            mv -Force $global:ContainerdInstallLocation\bin\* $global:ContainerdInstallLocation\
+            Remove-Item -Path $tarfile -Force
+            Remove-Item -Path $global:ContainerdInstallLocation\bin -Force -Recurse
+        }
+        # get configuration options
+        Add-SystemPathEntry $global:ContainerdInstallLocation
+        $configFile = [Io.Path]::Combine($global:ContainerdInstallLocation, "config.toml")
+        $clusterConfig = ConvertFrom-Json ((Get-Content $global:KubeClusterConfigPath -ErrorAction Stop) | Out-String)
+        $pauseImage = $clusterConfig.Cri.Images.Pause
+        $formatedbin = $(($CNIBinDir).Replace("\", "/"))
+        $formatedconf = $(($CNIConfDir).Replace("\", "/"))
+        $sandboxIsolation = 0
+        $windowsVersion = Select-Windows-Version -buildNumber (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").CurrentBuild
+        $hypervRuntimes = ""
+        $hypervHandlers = $global:ContainerdWindowsRuntimeHandlers.split(",", [System.StringSplitOptions]::RemoveEmptyEntries)
+
+        # configure
+        if ($global:DefaultContainerdWindowsSandboxIsolation -eq "hyperv") {
+            Write-Log "default runtime for containerd set to hyperv"
+            $sandboxIsolation = 1
+        }
+        $template = Get-Content -Path "c:\AzureData\windows\containerdtemplate.toml"
+        if ($sandboxIsolation -eq 0 -And $hypervHandlers.Count -eq 0) {
+            # remove the value hypervisor place holder
+            $template = $template | Select-String -Pattern 'hypervisors' -NotMatch | Out-String
+        }
+        else {
+            $hypervRuntimes = CreateHypervisorRuntimes -builds @($hypervHandlers) -image $pauseImage
+        }
+        $template.Replace('{{sandboxIsolation}}', $sandboxIsolation).
+                Replace('{{pauseImage}}', $pauseImage).
+                Replace('{{hypervisors}}', $hypervRuntimes).
+                Replace('{{cnibin}}', $formatedbin).
+                Replace('{{cniconf}}', $formatedconf).
+                Replace('{{currentversion}}', $windowsVersion) | `
+    Out-File -FilePath "$configFile" -Encoding ascii
+        RegisterContainerDService -KubeDir $KubeDir
+        Enable-Logging
+    }
+
+    function New-InfraContainer {
+        Param(
+            [Parameter(Mandatory = $true)][string]
+            $KubeDir,
+            $DestinationTag = "kubletwin/pause",
+            [Parameter(Mandatory = $false)][string]
+            $ContainerRuntime = "docker"
+        )
+        cd $KubeDir
+        $windowsVersion = Select-Windows-Version -buildNumber (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").CurrentBuild
+
+        # Reference for these tags: curl -L https://mcr.microsoft.com/v2/k8s/core/pause/tags/list
+        # Then docker run --rm mplatform/manifest-tool inspect mcr.microsoft.com/k8s/core/pause:<tag>
+
+        $clusterConfig = ConvertFrom-Json ((Get-Content $global:KubeClusterConfigPath -ErrorAction Stop) | Out-String)
+        $defaultPauseImage = $clusterConfig.Cri.Images.Pause
+
+        $pauseImageVersions = @("1809", "1903", "1909", "2004", "2009", "20h2", "ltsc2022")
+
+        if ($pauseImageVersions -icontains $windowsVersion) {
+            if ($ContainerRuntime -eq "docker") {
+                if (-not (Test-ContainerImageExists -Image $defaultPauseImage -ContainerRuntime $ContainerRuntime) -or $global:AlwaysPullWindowsPauseImage) {
+                    Invoke-Executable -Executable "docker" -ArgList @("pull", "$defaultPauseImage") -Retries 5 -RetryDelaySeconds 30
+                }
+                Invoke-Executable -Executable "docker" -ArgList @("tag", "$defaultPauseImage", "$DestinationTag")
+            }
+            else {
+                # containerd
+                if (-not (Test-ContainerImageExists -Image $defaultPauseImage -ContainerRuntime $ContainerRuntime) -or $global:AlwaysPullWindowsPauseImage) {
+                    Invoke-Executable -Executable "ctr" -ArgList @("-n", "k8s.io", "image", "pull", "$defaultPauseImage") -Retries 5 -RetryDelaySeconds 30
+                }
+                Invoke-Executable -Executable "ctr" -ArgList @("-n", "k8s.io", "image", "tag", "$defaultPauseImage", "$DestinationTag")
+            }
+        }
+        else {
+            Build-PauseContainer -WindowsBase "mcr.microsoft.com/nanoserver-insider" -DestinationTag $DestinationTag -ContainerRuntime $ContainerRuntime
+        }
+    }
+
+
     # Exit early if the script has been executed
     if (Test-Path -Path $CSEResultFilePath -PathType Leaf) {
         Write-Log "The script has been executed before, will exit without doing anything."
