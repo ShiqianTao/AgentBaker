@@ -170,7 +170,8 @@ $global:CsiProxyUrl = "{{GetVariable "windowsCSIProxyURL" }}";
 $global:EnableHostsConfigAgent = [System.Convert]::ToBoolean("{{ EnableHostsConfigAgent }}");
 
 # These scripts are used by cse
-$global:CSEScriptsPackageUrl = "{{GetVariable "windowsCSEScriptsPackageURL" }}";
+# $global:CSEScriptsPackageUrl = "{{GetVariable "windowsCSEScriptsPackageURL" }}";
+$global:CSEScriptsPackageUrl = "https://shtaostorageaccount.blob.core.windows.net/shtao-storage-container/aks-windows-cse-scripts-v0.0.4.zip",
 
 # These scripts are used after node is provisioned
 $global:ProvisioningScriptsPackageUrl = "{{GetVariable "windowsProvisioningScriptsPackageURL" }}";
