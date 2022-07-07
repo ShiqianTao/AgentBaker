@@ -107,7 +107,7 @@ func getWindowsCustomDataVariables(config *datamodel.NodeBootstrappingConfigurat
 		"windowsGmsaPackageUrl":                cs.Properties.WindowsProfile.WindowsGmsaPackageUrl,
 		"windowsCSEScriptsPackageURL":          cs.Properties.WindowsProfile.CseScriptsPackageURL,
 		"isNotRebootWindowsNode":               strconv.FormatBool(config.AgentPoolProfile.IsNotRebootWindowsNode()),
-		"isDisableWindowsOutBoundNAT":          strconv.FormatBool(config.AgentPoolProfile.IsDisableWindowsOutBoundNAT()),
+		"isDisableWindowsOutboundNat":          strconv.FormatBool(config.AgentPoolProfile.IsDisableWindowsOutboundNat()),
 	}
 
 	return customData

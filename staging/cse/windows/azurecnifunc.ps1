@@ -97,7 +97,7 @@ function Set-AzureCNIConfig
     # The Azure Instance Metadata Service (IMDS) provides information about currently running virtual machine instances.
     # IMDS is a REST API that's available at a well-known, non-routable IP address (169.254.169.254)
     # Details: https://docs.microsoft.com/en-us/azure/virtual-machines/windows/instance-metadata-service?tabs=windows#known-issues-and-faq
-    if ($global:IsDisableWindowsOutBoundNAT)
+    if ($global:IsDisableWindowsOutboundNat)
     {
         $valueObj = [PSCustomObject]@{
             Type = 'LoopbackDSR'
