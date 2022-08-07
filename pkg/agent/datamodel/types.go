@@ -662,7 +662,8 @@ type AgentPoolProfile struct {
 	MessageOfTheDay       string               `json:"messageOfTheDay,omitempty"`
 	// This is a new property and all old agent pools do no have this field. We need to keep the default
 	// behavior to reboot Windows node when it is nil
-	NotRebootWindowsNode *bool `json:"notRebootWindowsNode,omitempty"`
+	NotRebootWindowsNode      *bool `json:"notRebootWindowsNode,omitempty"`
+	DisableWindowsOutboundNat *bool `json:"disableWindowsOutboundNat,omitempty"`
 }
 
 // Properties represents the AKS cluster definition
@@ -1046,6 +1047,11 @@ func (a *AgentPoolProfile) GetKubernetesLabels(rg string, deprecated bool, nvidi
 // IsNotRebootWindowsNode returns true if it does not need to reboot Windows node
 func (w *AgentPoolProfile) IsNotRebootWindowsNode() bool {
 	return w.NotRebootWindowsNode != nil && *w.NotRebootWindowsNode
+}
+
+// IsDisableWindowsOutboundNat returns true if the agent pool disable Windows OutBoundNAT
+func (w *AgentPoolProfile) IsDisableWindowsOutboundNat() bool {
+	return w.DisableWindowsOutboundNat != nil && *w.DisableWindowsOutboundNat
 }
 
 // HasSecrets returns true if the customer specified secrets to install
