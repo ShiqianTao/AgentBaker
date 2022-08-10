@@ -660,10 +660,7 @@ type AgentPoolProfile struct {
 	CustomKubeletConfig   *CustomKubeletConfig `json:"customKubeletConfig,omitempty"`
 	CustomLinuxOSConfig   *CustomLinuxOSConfig `json:"customLinuxOSConfig,omitempty"`
 	MessageOfTheDay       string               `json:"messageOfTheDay,omitempty"`
-	// This is a new property and all old agent pools do no have this field. We need to keep the default
-	// behavior to reboot Windows node when it is nil
-	NotRebootWindowsNode      *bool `json:"notRebootWindowsNode,omitempty"`
-	DisableWindowsOutboundNat *bool `json:"disableWindowsOutboundNat,omitempty"`
+	WindowsProperties     *WindowsProperties   `json:"windowsProperties,omitempty"`
 }
 
 // Properties represents the AKS cluster definition
@@ -1042,16 +1039,6 @@ func (a *AgentPoolProfile) GetKubernetesLabels(rg string, deprecated bool, nvidi
 		buf.WriteString(fmt.Sprintf(",%s=%s", key, a.CustomNodeLabels[key]))
 	}
 	return buf.String()
-}
-
-// IsNotRebootWindowsNode returns true if it does not need to reboot Windows node
-func (w *AgentPoolProfile) IsNotRebootWindowsNode() bool {
-	return w.NotRebootWindowsNode != nil && *w.NotRebootWindowsNode
-}
-
-// IsDisableWindowsOutboundNat returns true if the agent pool disable Windows OutBoundNAT
-func (w *AgentPoolProfile) IsDisableWindowsOutboundNat() bool {
-	return w.DisableWindowsOutboundNat != nil && *w.DisableWindowsOutboundNat
 }
 
 // HasSecrets returns true if the customer specified secrets to install
@@ -1893,4 +1880,19 @@ func NewError(code CSEStatusParsingErrorCode, message string) *CSEStatusParsingE
 
 func (err *CSEStatusParsingError) Error() string {
 	return fmt.Sprintf("CSE has invalid message=%q, InstanceErrorCode=%s", err.Message, err.Code)
+}
+
+type WindowsProperties struct {
+	NotRebootNode      *bool `json:"notRebootNode,omitempty"`
+	DisableOutboundNat *bool `json:"disableOutboundNat,omitempty"`
+}
+
+// IsNotRebootNode returns true if it does not need to reboot Windows node
+func (w *WindowsProperties) IsNotRebootNode() bool {
+	return w.NotRebootNode != nil && *w.NotRebootNode
+}
+
+// IsDisableOutboundNat returns true if Windows nodes disable OutBoundNAT
+func (w *WindowsProperties) IsDisableOutboundNat() bool {
+	return w.DisableOutboundNat != nil && *w.DisableOutboundNat
 }
