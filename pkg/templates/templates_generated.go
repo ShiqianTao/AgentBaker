@@ -6126,6 +6126,9 @@ Expand-Archive scripts.zip -DestinationPath "C:\\AzureData\\"
 . c:\AzureData\windows\windowscsehelper.ps1
 # util functions only can be used after this line, for example, Write-Log
 
+Write-Log "Start CSE"
+Get-LocalUser | Write-Output
+
 try
 {
     Write-Log ".\CustomDataSetupScript.ps1 -MasterIP $MasterIP -KubeDnsServiceIp $KubeDnsServiceIp -MasterFQDNPrefix $MasterFQDNPrefix -Location $Location -AADClientId $AADClientId -NetworkAPIVersion $NetworkAPIVersion -TargetEnvironment $TargetEnvironment"
@@ -6360,6 +6363,9 @@ try
     Register-NodeResetScriptTask
     Update-DefenderPreferences
 
+    Write-Log "Start windowsSecureTlsEnabled"
+    Get-LocalUser | Write-Output
+
     if ($windowsSecureTlsEnabled) {
         $windowsVersion = Get-WindowsVersion
         if ($windowsVersion -ne "1809") {
@@ -6375,6 +6381,9 @@ try
             }
         }
     }
+
+    Write-Log "End windowsSecureTlsEnabled"
+    Get-LocalUser | Write-Output
 
     Enable-FIPSMode -FipsEnabled $fipsEnabled
     if ($global:WindowsGmsaPackageUrl) {
@@ -6440,6 +6449,9 @@ finally
     # $JsonString = "ExitCode: `+"`"+`"{0}`+"`"+`", Output: `+"`"+`"{1}`+"`"+`", Error: `+"`"+`"{2}`+"`"+`", ExecDuration: `+"`"+`"{3}`+"`"+`"" -f $global:ExitCode, "", $global:ErrorMessage, $ExecutionDuration.TotalSeconds
     Write-Log "Generate CSE result to $CSEResultFilePath : $global:ExitCode"
     echo $global:ExitCode | Out-File -FilePath $CSEResultFilePath -Encoding utf8
+
+    Write-Log "End CSE"
+    Get-LocalUser | Write-Output
 }
 
 `)
