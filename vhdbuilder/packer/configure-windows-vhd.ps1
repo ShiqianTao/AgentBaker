@@ -15,6 +15,7 @@ filter Timestamp { "$(Get-Date -Format o): $_" }
 function Write-Log($Message) {
     $msg = $message | Timestamp
     Write-Output $msg
+    Get-LocalUser | Write-Output
 }
 
 function DownloadFileWithRetry {

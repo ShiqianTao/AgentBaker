@@ -6167,10 +6167,16 @@ try
     # Install OpenSSH if SSH enabled
     $sshEnabled = [System.Convert]::ToBoolean("{{ WindowsSSHEnabled }}")
 
+    Write-Log "End windowsSecureTlsEnabled"
+    Get-LocalUser | Write-Output
+
     if ( $sshEnabled ) {
         Write-Log "Install OpenSSH"
         Install-OpenSSH -SSHKeys $SSHKeys
     }
+
+    Write-Log "End windowsSecureTlsEnabled"
+    Get-LocalUser | Write-Output
 
     Write-Log "Apply telemetry data setting"
     Set-TelemetrySetting -WindowsTelemetryGUID $global:WindowsTelemetryGUID
@@ -6583,6 +6589,7 @@ filter Timestamp { "$(Get-Date -Format o): $_" }
 function Write-Log($message) {
     $msg = $message | Timestamp
     Write-Output $msg
+    Get-LocalUser | Write-Output
 }
 
 function DownloadFileOverHttp {

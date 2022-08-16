@@ -9,6 +9,7 @@ filter Timestamp { "$(Get-Date -Format o): $_" }
 
 function Write-Log ($message) {
     $message | Timestamp | Tee-Object -FilePath $global:LogPath -Append
+    Get-LocalUser | Write-Output
 }
 
 Write-Log "Entering windowslogscleanup.ps1"
